@@ -11,6 +11,8 @@ def predict_house_price(features, model, category_mapping):
 
     # Make prediction
     prediction = model.predict(xgb.DMatrix(input_data))
+    print(prediction)
+    print(prediction[0])
     return prediction[0]
 
 # Function to encode categorical features
