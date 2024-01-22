@@ -7,7 +7,9 @@ import pandas as pd
 def predict_house_price(features, model, category_mapping):
     # Encode categorical features
     input_data = encode_categorical_features(features, category_mapping)
-    input_data = np.array(input_data).reshape(1, -1)
+    input_data = np.array(input_data).reshape(1, -1)    
+    print("Shape of input_data:", input_data.shape)
+    print("Input Data:", input_data)
 
     # Make prediction
     prediction = model.predict(xgb.DMatrix(input_data))
