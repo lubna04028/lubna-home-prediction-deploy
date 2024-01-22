@@ -7,9 +7,7 @@ import pandas as pd
 def predict_house_price(features, model, category_mapping):
     # Encode categorical features
     input_data = encode_categorical_features(features, category_mapping)
-    input_data = np.array(input_data).reshape(1, -1)    
-    print("Shape of input_data:", input_data.shape)
-    print("Input Data:", input_data)
+    input_data = np.array(input_data).reshape(1, -1)
 
     # Make prediction
     prediction = model.predict(xgb.DMatrix(input_data))
@@ -22,9 +20,8 @@ def encode_categorical_features(input_features, category_mapping):
     for column, mapping in category_mapping.items():
         user_input = input_features.get(column)
         if user_input is not None:
-            encoded_column = pd.Series([0] * len(mapping), index=mapping.keys(), dtype=int)
-            encoded_column[user_input] = 1
-            encoded_data = pd.concat([encoded_data, encoded_column], axis=1)
+            for category, value in mapping.items():
+                encoded_data[f"{column}_{category}"] = 1 if user_input == category else 0
 
     # Include numerical features
     numerical_features = ['INT_SQFT', 'DIST_MAINROAD', 'N_BEDROOM', 'N_BATHROOM', 'N_ROOM', 'AGE']
@@ -62,12 +59,10 @@ def main():
     n_room = st.slider("Enter N_ROOM", min_value=1, max_value=10, value=3)
     age = st.slider("Enter AGE", min_value=1, max_value=100, value=20)
 
-    area = st.selectbox("Select AREA", ['Adyar', 'Anna Nagar', 'Chrompet', 'KK Nagar', 'Karapakam', 'T Nagar', 'Velachery'])
-    sale_cond = st.selectbox("Select N_SALE_COND", ['AbNormal', 'Adj Land', 'Family', 'Normal Sale', 'Partial'])
-    park_facil = st.selectbox("Select PARK_FACIL", ['No', 'Yes'])
-    build_type = st.selectbox("Select BUILDTYPE", ['Commercial', 'House', 'Others'])
-    utility_avail = st.selectbox("Select UTILITY_AVAIL", ['All Pub', 'ELO', 'NoSeWa', 'NoSewr '])
-    street = st.selectbox("Select STREET", ['Gravel', 'No Access', 'Paved'])
+    # Define the features that come from select boxes
+    categorical_features = [
+        'AREA', 'SALE_COND', 'PARK_FACIL', 'BUILDTYPE', 'UTILITY_AVAIL', 'STREET'
+    ]
 
     # Prepare input features
     input_features = {
@@ -76,14 +71,13 @@ def main():
         'N_BEDROOM': n_bedroom,
         'N_BATHROOM': n_bathroom,
         'N_ROOM': n_room,
-        'AGE': age,
-        'AREA': area,
-        'SALE_COND': sale_cond,
-        'PARK_FACIL': park_facil,
-        'BUILDTYPE': build_type,
-        'UTILITY_AVAIL': utility_avail,
-        'STREET': street
+        'AGE': age
     }
+
+    # Dynamically add one-hot encoded features based on user selection
+    for feature in categorical_features:
+        selected_value = st.selectbox(f"Select {feature}", category_mapping[feature].keys())
+        input_features.update({feature: selected_value})
 
     # Make prediction
     predicted_price = predict_house_price(input_features, loaded_booster, category_mapping)
@@ -96,8 +90,7 @@ def main():
     st.subheader("Predicted House Price:")
     st.write(f"${predicted_price:,.2f}")
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main
 
 # import streamlit as st
 # from PIL import Image
