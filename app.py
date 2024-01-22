@@ -90,8 +90,8 @@ def main():
     st.subheader("Predicted House Price:")
     st.write(f"${predicted_price:,.2f}")
 
-if __name__ == "__main
-
+if __name__ == "__main__":
+    main()
 # import streamlit as st
 # from PIL import Image
 # import numpy as np
