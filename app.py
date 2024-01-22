@@ -38,7 +38,7 @@ def main():
     st.text("Enter the parameters to predict your house's price:")
 
     # Load the model
-    model_file_path = 'xgboostBestModel.model'
+    model_file_path = 'xgboostBestModel.h5'
     loaded_booster = xgb.Booster()
     loaded_booster.load_model(model_file_path)
 
